@@ -2,3 +2,6 @@ keys_log.txt
 systeminfo.txt
 clipboard.txt
 encryption_key.txt
+clipboard_encrypted.txt
+keys_log_encrypted.txt
+systeminfo_encrypted.txt
