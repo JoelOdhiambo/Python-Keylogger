@@ -1,2 +1,2 @@
 # Python-Keylogger
-A simple key logger using Python
+A  key logger written in Python
